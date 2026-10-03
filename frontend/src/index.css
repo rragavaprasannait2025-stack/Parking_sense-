@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 99 102 241;
+    --color-surface: 15 23 42;
+  }
+
+  * {
+    @apply border-surface-200;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-surface-950 text-surface-100 font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    font-variation-settings: "opsz" 32;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-500;
+  }
+
+  /* Focus visible */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-surface-950;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-brand-500/30 text-brand-100;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Card base */
+  .card {
+    @apply bg-surface-900 border border-surface-800 rounded-xl shadow-card;
+  }
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-surface-700 hover:shadow-card-hover;
+  }
+
+  /* Badge base */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-available {
+    @apply badge bg-available/10 text-available border border-available/20;
+  }
+  .badge-occupied {
+    @apply badge bg-occupied/10 text-occupied border border-occupied/20;
+  }
+  .badge-reserved {
+    @apply badge bg-reserved/10 text-reserved border border-reserved/20;
+  }
+  .badge-maintenance {
+    @apply badge bg-maintenance/10 text-maintenance border border-maintenance/20;
+  }
+
+  /* Demo / Simulation banner */
+  .demo-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 bg-reserved/10 border border-reserved/30 
+           text-reserved text-xs font-semibold rounded-full tracking-wide uppercase;
+  }
+
+  /* Stat number */
+  .stat-number {
+    @apply text-3xl font-bold text-surface-50 tabular-nums;
+  }
+  .stat-label {
+    @apply text-sm text-surface-400 font-medium;
+  }
+
+  /* Section heading */
+  .section-title {
+    @apply text-2xl font-bold text-surface-50;
+  }
+  .section-subtitle {
+    @apply text-surface-400 mt-1;
+  }
+
+  /* Divider */
+  .divider {
+    @apply border-t border-surface-800;
+  }
+
+  /* Glass surface */
+  .glass {
+    @apply bg-surface-900/80 backdrop-blur-sm border border-surface-700/50;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-brand-300;
+  }
+  .text-gradient-eco {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-eco to-available;
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Slot grid */
+  .slot-available  { @apply bg-available/10 border-available/40 text-available; }
+  .slot-occupied   { @apply bg-occupied/10  border-occupied/40  text-occupied; }
+  .slot-reserved   { @apply bg-reserved/10  border-reserved/40  text-reserved; }
+  .slot-maintenance{ @apply bg-surface-800  border-surface-600  text-surface-400; }
+  .slot-ev         { @apply bg-brand-900/50 border-brand-500/40 text-brand-300; }
+}

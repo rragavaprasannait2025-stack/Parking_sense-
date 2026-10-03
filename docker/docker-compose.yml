@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  # ─── MySQL Database ─────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: parksensex-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: parksensex_root
+      MYSQL_DATABASE: parksensex
+      MYSQL_USER: parksensex
+      MYSQL_PASSWORD: parksensex_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ../database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Spring Boot Backend ─────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: parksensex-backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/parksensex
+      SPRING_DATASOURCE_USERNAME: parksensex
+      SPRING_DATASOURCE_PASSWORD: parksensex_pass
+      PARKSENSEX_JWT_SECRET: change_this_in_production_min_256bits
+      PARKSENSEX_ML_SERVICE_URL: http://ml-service:8001
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ─── Python ML Service ───────────────────────────────────────────────────────
+  ml-service:
+    build:
+      context: ../ml-service
+      dockerfile: Dockerfile
+    container_name: parksensex-ml
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+
+  # ─── React Frontend ───────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: parksensex-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
